@@ -4,7 +4,7 @@
 #include "PID.h"
 #include <math.h>
 
-#define NUM_RUNS 20000
+#define NUM_MSGS 200
 
 // for convenience
 using json = nlohmann::json;
@@ -91,6 +91,13 @@ int main()
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
     }
+    pid.n++;
+    std::cout << "n = " << pid.n << std::endl;
+    /*
+    if( pid.n == NUM_MSGS ){
+      pid.n = 0;
+      pid.Restart(ws);
+      }*/
   });
 
   // We don't need this since we're not using HTTP but if it's removed the program
