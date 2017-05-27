@@ -32,6 +32,7 @@ Self-Driving Car Engineer Nanodegree Program
 To determine the values of the PID coefficients that would make the car drive safely around the track, the twiddle algorithm was used to minimize the mean squared cross-track error.
 
 ## Final PID Values
-Kp = 0.25
-Ki = 0.003
-Kd = 2.5
+
+1. Kp = 0.25
+2. Ki = 0.003
+3. Kd = 2.5
