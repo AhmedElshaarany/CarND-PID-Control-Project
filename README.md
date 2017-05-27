@@ -27,58 +27,21 @@ Self-Driving Car Engineer Nanodegree Program
 3. Compile: `cmake .. && make`
 4. Run it: `./pid`. 
 
-## Editor Settings
+## Finding the PID Coefficient Values
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+To determine the values of the PID coefficients that would make the car drive safely around the track, a combination of manual tuning and the twiddle algorithm was used to minimize the mean squared cross-track error.
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+### Proportional Coefficient Kp
+The proportional term of the PID equation generates an output value proportional to the current value of the error. The cofficient must not be too low or else the response of the system will be too slow, and not too high or else the system will repsond to the smallest of changes. When setting in Kp to a small value, the car did not respond fast enough to stay on track. When Kp was set to a large value, the car kept going left and right with a high frequency.
 
-## Code Style
+### Integral Coefficient Ki
+This term contributes a value proportional to the magnitude of the error and its duration. The error is summed over time and provides the error offset that should have been corrected earlier. This term usually makes up for a systematic bias in the steering angle of the car's wheels. The value of Ki for this project is very small, which indicates that there is almost zero systematic bias.
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+### Derivate Coefficient Kd
+The derivative term is determined by the slope of error of time multiplied by the derivative coefficient. This term is used to avoid overshooting in terms of the system's response to the error. Having a small Kd value will cause the car to oscillate. On the other hand, a Kd value that is to large will cause the system to be sensitive to small error changes.
 
-## Project Instructions and Rubric
+## Final PID Values
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+1. Kp = 0.25
+2. Ki = 0.003
+3. Kd = 2.5
