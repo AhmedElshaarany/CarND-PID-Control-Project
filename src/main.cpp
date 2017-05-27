@@ -4,7 +4,8 @@
 #include "PID.h"
 #include <math.h>
 
-#define NUM_MSGS 200
+// Function Prototypes
+double getSteerValue(double cte, PID& pid);
 
 // for convenience
 using json = nlohmann::json;
@@ -35,9 +36,10 @@ int main()
   uWS::Hub h;
 
   PID pid;
-  // TODO: Initialize the pid variable.
-  pid.Init(.2, 0.004, 3.0);
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  // Initialize the pid variable.
+  pid.Init(0.25, 0.003, 2.5);
+
+    h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -53,27 +55,27 @@ int main()
           double speed = std::stod(j[1]["speed"].get<std::string>());
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
-	  int n = 0;
-          /*
-          * TODO: Calcuate steering value here, remember the steering value is
-          * [-1, 1].
-          * NOTE: Feel free to play around with the throttle and speed. Maybe use
-          * another PID controller to control the speed!
-          */
 
-	  if(!pid.is_initialized){
-	    pid.int_cte = cte;
-	    pid.prev_cte = cte;
-	    pid.curr_cte = cte;
-	    pid.is_initialized = true;
+	  // initialize the cte values of the pid
+	  if(!pid.is_cte_initialized){
+	    pid.InitCTE(cte);
 	  }
-	  else{
-	      pid.int_cte += cte;
-	      pid.prev_cte = pid.curr_cte;
-	      pid.curr_cte = cte;
-	      double diff_cte = pid.curr_cte - pid.prev_cte;
-	      steer_value = -pid.Kp * cte - pid.Ki * pid.int_cte - pid.Kd * diff_cte;
+
+	  /***************************************
+	   *     Uncomment to activate twiddle   *
+	   ***************************************	  
+	  else if(!pid.is_tuned){
+	    pid.UpdateError(cte, ws);
+	    std::cout << "Best Error = " << pid.best_error << std::endl;
+	    std::cout << " Kp = " << pid.Kp << " Ki = " << pid.Ki << " Kd = " << pid.Kd << std::endl;
+	    std::cout << "Total Error = " << pid.TotalError() << "\n";
 	  }
+	  ****************************************
+	  *      End of twiddle section          *
+	  ***************************************/
+
+	  // calculate steering value
+	  steer_value = getSteerValue(cte, pid);
 	  
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
@@ -91,13 +93,7 @@ int main()
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
     }
-    pid.n++;
-    std::cout << "n = " << pid.n << std::endl;
-    /*
-    if( pid.n == NUM_MSGS ){
-      pid.n = 0;
-      pid.Restart(ws);
-      }*/
+
   });
 
   // We don't need this since we're not using HTTP but if it's removed the program
@@ -134,5 +130,25 @@ int main()
     std::cerr << "Failed to listen to port" << std::endl;
     return -1;
   }
+
   h.run();
+
+
+}
+
+
+
+double getSteerValue(double cte, PID& pid){
+
+  // calculate cte values
+  pid.int_cte += cte;
+  pid.prev_cte = pid.curr_cte;
+  pid.curr_cte = cte;
+  double diff_cte = pid.curr_cte - pid.prev_cte;
+
+  // calculate steer_value using a PID controller
+  double steer_value = -pid.Kp * cte - pid.Ki * pid.int_cte - pid.Kd * diff_cte;
+  
+  return steer_value;
+
 }

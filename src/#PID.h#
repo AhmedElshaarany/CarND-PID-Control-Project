@@ -17,24 +17,21 @@ public:
   double Ki;
   double Kd;
 
-  /*
-   * CTE variables
-   */
+
+  bool is_initialized;
+  bool tuned;
   double int_cte;
   double prev_cte;
   double curr_cte;
-  bool is_cte_initialized;
-
-  /*
-   * Twiddle tuning variables
-   */
-  bool is_tuned;
   int n;
   int state;
-  int coeff;
-  double best_error;
-  double curr_error;
-  
+
+  // error accumulators
+  double best_err;
+  double error;
+
+  // current coefficient
+  int coeff_index;
   /*
   * Constructor
   */
@@ -48,7 +45,11 @@ public:
   /*
   * Initialize PID.
   */
-  void Init(double Kp, double Ki, double Kd);
+  void Init(double Kp, double Ki, double Kd, double cte);
+
+
+  double getSteer();
+
   
   /*
   * Update the PID error variables given cross track error.
@@ -60,11 +61,6 @@ public:
   */
   double TotalError();
 
-  /*
-  * Initialize PID cte values
-  */
-  void InitCTE(double cte);
-    
   /*
    * Restart the simulator
    */
