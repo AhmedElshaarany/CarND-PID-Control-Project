@@ -29,7 +29,16 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## Finding the PID Coefficient Values
 
-To determine the values of the PID coefficients that would make the car drive safely around the track, the twiddle algorithm was used to minimize the mean squared cross-track error.
+To determine the values of the PID coefficients that would make the car drive safely around the track, a combination of manual tuning and the twiddle algorithm was used to minimize the mean squared cross-track error.
+
+### Proportional Coefficient Kp
+The proportional term of the PID equation generates an output value proportional to the current value of the error. The cofficient must not be too low or else the response of the system will be too slow, and not too high or else the system will repsond to the smallest of changes. When setting in Kp to a small value, the car did not respond fast enough to stay on track. When Kp was set to a large value, the car kept going left and right with a high frequency.
+
+### Integral Coefficient Ki
+This term contributes a value proportional to the magnitude of the error and its duration. The error is summed over time and provides the error offset that should have been corrected earlier. This term usually makes up for a systematic bias in the steering angle of the car's wheels. The value of Ki for this project is very small, which indicates that there is almost zero systematic bias.
+
+### Derivate Coefficient Kd
+The derivative term is determined by the slope of error of time multiplied by the derivative coefficient. This term is used to avoid overshooting in terms of the system's response to the error. Having a small Kd value will cause the car to oscillate. On the other hand, a Kd value that is to large will cause the system to be sensitive to small error changes.
 
 ## Final PID Values
 
